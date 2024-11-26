@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cross-Site Scripting (XSS) Demonstration</title>
+    <style>
+        /* Basic styling for the demonstration page */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .example-box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 10px 0;
+            background-color: #f9f9f9;
+        }
+        .alert {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Demonstration: Cross-Site Scripting (XSS)</h1>
+    <p>Below are examples of XSS attacks commonly seen in web applications.</p>
+    
+    <!-- Reflected XSS Example -->
+    <div class="example-box">
+        <h2>1. Reflected XSS</h2>
+        <p>Enter your name:</p>
+        <form method="GET" action="">
+            <!-- User input form. Input is sent as a query string parameter when submitted -->
+            <input type="text" name="name" placeholder="Your name">
+            <button type="submit">Submit</button>
+        </form>
+        <p>Result:</p>
+        <div>
+            <!-- This section displays the user's input without any sanitization -->
+            <p id="output">
+                <?php 
+                // Check if the 'name' parameter exists in the URL
+                if(isset($_GET['name'])) {
+                    // Directly output the 'name' parameter, making it vulnerable to XSS
+                    echo $_GET['name']; 
+                }
+                ?>
+            </p>
+        </div>
+        <p class="alert">Try entering: <code>&lt;script&gt;alert('XSS!')&lt;/script&gt;</code></p>
+        <!-- The example encourages users to input a script tag to see the attack in action -->
+    </div>
+
+    <!-- Stored XSS Example -->
+    <div class="example-box">
+        <h2>2. Stored XSS</h2>
+        <p>This example simulates how stored XSS works in a vulnerable application.</p>
+        <p>For simplicity, this example does not connect to a database but mimics the behavior.</p>
+        <!-- Textarea for user to input a comment -->
+        <textarea id="comment-box" placeholder="Write a comment..."></textarea>
+        <button onclick="storeComment()">Submit</button>
+        <h3>Comments:</h3>
+        <div id="comments">
+            <!-- This is where comments will appear. User input is directly injected here -->
+        </div>
+    </div>
+
+    <script>
+        // Simulating Stored XSS with JavaScript
+        function storeComment() {
+            // Retrieve the comments container
+            const commentsDiv = document.getElementById('comments');
+            // Retrieve the input from the comment box
+            const commentBox = document.getElementById('comment-box');
+            const comment = commentBox.value;
+            // Inject the user's comment into the DOM without sanitization
+            // This makes the code vulnerable to XSS
+            commentsDiv.innerHTML += `<p>${comment}</p>`;
+            // Clear the input field after submission
+            commentBox.value = '';
+        }
+    </script>
+</body>
+</html>
